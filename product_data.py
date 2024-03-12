@@ -51,17 +51,22 @@ def laptop_form():
         
         # Display success message
         st.success("Laptop details saved successfully!")
+        
+
 
 # Function to export CSV and images
 def export_data():
-    # Copy images folders to 'images' directory
+    # Clear the images folder
     images_folder = "images"
+    if os.path.exists(images_folder):
+        shutil.rmtree(images_folder)
     os.makedirs(images_folder, exist_ok=True)
+    
+    # Copy new images folders to 'images' directory
     for folder in os.listdir():
-        if os.path.isdir(folder) and folder != images_folder:
+        if os.path.isdir(folder) and folder != images_folder and not folder.startswith('.git'):
             destination_folder = os.path.join(images_folder, folder)
-            if not os.path.exists(destination_folder):
-                shutil.copytree(folder, destination_folder)
+            shutil.copytree(folder, destination_folder)
     
     # Zip images folder
     with ZipFile('images.zip', 'w') as zipf:
@@ -73,7 +78,6 @@ def export_data():
     st.markdown(f"### Export Data")
     st.markdown(get_binary_file_downloader_html("laptop_data.csv", "CSV"), unsafe_allow_html=True)
     st.markdown(get_binary_file_downloader_html("images.zip", "Images ZIP"), unsafe_allow_html=True)
-
 
 # Function to generate a download link for a file
 def get_binary_file_downloader_html(file_path, file_label):
